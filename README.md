@@ -1,5 +1,5 @@
 # Build Status
-!https://travis-ci.com/speedycloud/cpp-sdk.svg?branch=master!:https://travis-ci.com/speedycloud/cpp-sdk
+[![Build Status](https://travis-ci.com/speedycloud/cpp-sdk.svg?branch=master)](https://travis-ci.com/speedycloud/cpp-sdk)
 
 # Upgrading Notes
 For 0.12+ all applications must call the Aws::InitAPI() function before making any other SDK calls, and the Aws::ShutdownAPI function when finished using the SDK. More information can be found here:
