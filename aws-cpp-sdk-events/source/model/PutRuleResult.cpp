@@ -37,7 +37,7 @@ PutRuleResult::PutRuleResult(const Aws::AmazonWebServiceResult<JsonValue>& resul
 
 PutRuleResult& PutRuleResult::operator =(const Aws::AmazonWebServiceResult<JsonValue>& result)
 {
-  JsonView jsonValue = result.GetPayload().View();
+  const JsonValue& jsonValue = result.GetPayload();
   if(jsonValue.ValueExists("RuleArn"))
   {
     m_ruleArn = jsonValue.GetString("RuleArn");

@@ -34,14 +34,14 @@ BatchArrayProperties::BatchArrayProperties() :
 {
 }
 
-BatchArrayProperties::BatchArrayProperties(JsonView jsonValue) : 
+BatchArrayProperties::BatchArrayProperties(const JsonValue& jsonValue) : 
     m_size(0),
     m_sizeHasBeenSet(false)
 {
   *this = jsonValue;
 }
 
-BatchArrayProperties& BatchArrayProperties::operator =(JsonView jsonValue)
+BatchArrayProperties& BatchArrayProperties::operator =(const JsonValue& jsonValue)
 {
   if(jsonValue.ValueExists("Size"))
   {

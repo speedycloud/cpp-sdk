@@ -35,7 +35,7 @@ PutTargetsResultEntry::PutTargetsResultEntry() :
 {
 }
 
-PutTargetsResultEntry::PutTargetsResultEntry(JsonView jsonValue) : 
+PutTargetsResultEntry::PutTargetsResultEntry(const JsonValue& jsonValue) : 
     m_targetIdHasBeenSet(false),
     m_errorCodeHasBeenSet(false),
     m_errorMessageHasBeenSet(false)
@@ -43,7 +43,7 @@ PutTargetsResultEntry::PutTargetsResultEntry(JsonView jsonValue) :
   *this = jsonValue;
 }
 
-PutTargetsResultEntry& PutTargetsResultEntry::operator =(JsonView jsonValue)
+PutTargetsResultEntry& PutTargetsResultEntry::operator =(const JsonValue& jsonValue)
 {
   if(jsonValue.ValueExists("TargetId"))
   {

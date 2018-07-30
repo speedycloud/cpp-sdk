@@ -23,7 +23,6 @@ namespace Utils
 namespace Json
 {
   class JsonValue;
-  class JsonView;
 } // namespace Json
 } // namespace Utils
 namespace CloudWatchEvents
@@ -43,8 +42,8 @@ namespace Model
   {
   public:
     BatchArrayProperties();
-    BatchArrayProperties(Aws::Utils::Json::JsonView jsonValue);
-    BatchArrayProperties& operator=(Aws::Utils::Json::JsonView jsonValue);
+    BatchArrayProperties(const Aws::Utils::Json::JsonValue& jsonValue);
+    BatchArrayProperties& operator=(const Aws::Utils::Json::JsonValue& jsonValue);
     Aws::Utils::Json::JsonValue Jsonize() const;
 
 

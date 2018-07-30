@@ -36,7 +36,7 @@ BatchParameters::BatchParameters() :
 {
 }
 
-BatchParameters::BatchParameters(JsonView jsonValue) : 
+BatchParameters::BatchParameters(const JsonValue& jsonValue) : 
     m_jobDefinitionHasBeenSet(false),
     m_jobNameHasBeenSet(false),
     m_arrayPropertiesHasBeenSet(false),
@@ -45,7 +45,7 @@ BatchParameters::BatchParameters(JsonView jsonValue) :
   *this = jsonValue;
 }
 
-BatchParameters& BatchParameters::operator =(JsonView jsonValue)
+BatchParameters& BatchParameters::operator =(const JsonValue& jsonValue)
 {
   if(jsonValue.ValueExists("JobDefinition"))
   {

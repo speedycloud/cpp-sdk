@@ -34,14 +34,14 @@ BatchRetryStrategy::BatchRetryStrategy() :
 {
 }
 
-BatchRetryStrategy::BatchRetryStrategy(JsonView jsonValue) : 
+BatchRetryStrategy::BatchRetryStrategy(const JsonValue& jsonValue) : 
     m_attempts(0),
     m_attemptsHasBeenSet(false)
 {
   *this = jsonValue;
 }
 
-BatchRetryStrategy& BatchRetryStrategy::operator =(JsonView jsonValue)
+BatchRetryStrategy& BatchRetryStrategy::operator =(const JsonValue& jsonValue)
 {
   if(jsonValue.ValueExists("Attempts"))
   {

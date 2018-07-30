@@ -18,7 +18,6 @@
 #include <aws/core/utils/logging/AWSLogging.h>
 #include <aws/core/utils/logging/DefaultLogSystem.h>
 #include <aws/core/Globals.h>
-#include <aws/core/external/cjson/cJSON.h>
 
 namespace Aws
 {
@@ -100,10 +99,6 @@ namespace Aws
         Aws::Http::SetInstallSigPipeHandlerFlag(options.httpOptions.installSigPipeHandler);
         Aws::Http::InitHttp();
         Aws::InitializeEnumOverflowContainer();
-        cJSON_Hooks hooks;
-        hooks.malloc_fn = [](size_t sz) { return Aws::Malloc("cJSON_Tag", sz); };
-        hooks.free_fn = Aws::Free;
-        cJSON_InitHooks(&hooks);
     }
 
     void ShutdownAPI(const SDKOptions& options)

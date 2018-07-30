@@ -34,14 +34,14 @@ RunCommandTarget::RunCommandTarget() :
 {
 }
 
-RunCommandTarget::RunCommandTarget(JsonView jsonValue) : 
+RunCommandTarget::RunCommandTarget(const JsonValue& jsonValue) : 
     m_keyHasBeenSet(false),
     m_valuesHasBeenSet(false)
 {
   *this = jsonValue;
 }
 
-RunCommandTarget& RunCommandTarget::operator =(JsonView jsonValue)
+RunCommandTarget& RunCommandTarget::operator =(const JsonValue& jsonValue)
 {
   if(jsonValue.ValueExists("Key"))
   {
@@ -52,7 +52,7 @@ RunCommandTarget& RunCommandTarget::operator =(JsonView jsonValue)
 
   if(jsonValue.ValueExists("Values"))
   {
-    Array<JsonView> valuesJsonList = jsonValue.GetArray("Values");
+    Array<JsonValue> valuesJsonList = jsonValue.GetArray("Values");
     for(unsigned valuesIndex = 0; valuesIndex < valuesJsonList.GetLength(); ++valuesIndex)
     {
       m_values.push_back(valuesJsonList[valuesIndex].AsString());

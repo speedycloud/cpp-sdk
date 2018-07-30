@@ -26,7 +26,6 @@ namespace Utils
 namespace Json
 {
   class JsonValue;
-  class JsonView;
 } // namespace Json
 } // namespace Utils
 namespace CloudWatchEvents
@@ -46,8 +45,8 @@ namespace Model
   {
   public:
     RunCommandTarget();
-    RunCommandTarget(Aws::Utils::Json::JsonView jsonValue);
-    RunCommandTarget& operator=(Aws::Utils::Json::JsonView jsonValue);
+    RunCommandTarget(const Aws::Utils::Json::JsonValue& jsonValue);
+    RunCommandTarget& operator=(const Aws::Utils::Json::JsonValue& jsonValue);
     Aws::Utils::Json::JsonValue Jsonize() const;
 
 

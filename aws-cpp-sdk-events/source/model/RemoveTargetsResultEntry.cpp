@@ -35,7 +35,7 @@ RemoveTargetsResultEntry::RemoveTargetsResultEntry() :
 {
 }
 
-RemoveTargetsResultEntry::RemoveTargetsResultEntry(JsonView jsonValue) : 
+RemoveTargetsResultEntry::RemoveTargetsResultEntry(const JsonValue& jsonValue) : 
     m_targetIdHasBeenSet(false),
     m_errorCodeHasBeenSet(false),
     m_errorMessageHasBeenSet(false)
@@ -43,7 +43,7 @@ RemoveTargetsResultEntry::RemoveTargetsResultEntry(JsonView jsonValue) :
   *this = jsonValue;
 }
 
-RemoveTargetsResultEntry& RemoveTargetsResultEntry::operator =(JsonView jsonValue)
+RemoveTargetsResultEntry& RemoveTargetsResultEntry::operator =(const JsonValue& jsonValue)
 {
   if(jsonValue.ValueExists("TargetId"))
   {

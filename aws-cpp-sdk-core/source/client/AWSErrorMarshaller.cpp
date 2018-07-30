@@ -37,24 +37,23 @@ AWS_CORE_API const char* TYPE = "__type";
 AWSError<CoreErrors> JsonErrorMarshaller::Marshall(const Aws::Http::HttpResponse& httpResponse) const
 {
     JsonValue exceptionPayload(httpResponse.GetResponseBody());
-    JsonView payloadView(exceptionPayload);
-    if (!exceptionPayload.WasParseSuccessful())
+    if (!exceptionPayload.WasParseSuccessful()) 
     {
         return AWSError<CoreErrors>(CoreErrors::UNKNOWN, "", "Failed to parse error payload", false);
     }
 
-    AWS_LOGSTREAM_TRACE(AWS_ERROR_MARSHALLER_LOG_TAG, "Error response is " << payloadView.WriteReadable());
+    AWS_LOGSTREAM_TRACE(AWS_ERROR_MARSHALLER_LOG_TAG, "Error response is " << exceptionPayload.WriteReadable());
 
-    Aws::String message(payloadView.ValueExists(MESSAGE_CAMEL_CASE) ? payloadView.GetString(MESSAGE_CAMEL_CASE) :
-            payloadView.ValueExists(MESSAGE_LOWER_CASE) ? payloadView.GetString(MESSAGE_LOWER_CASE) : "");
+    Aws::String message(exceptionPayload.ValueExists(MESSAGE_CAMEL_CASE) ? exceptionPayload.GetString(MESSAGE_CAMEL_CASE) :
+            exceptionPayload.ValueExists(MESSAGE_LOWER_CASE) ? exceptionPayload.GetString(MESSAGE_LOWER_CASE) : "");
 
     if (httpResponse.HasHeader(ERROR_TYPE_HEADER))
     {
         return Marshall(httpResponse.GetHeader(ERROR_TYPE_HEADER), message);
     }
-    else if (payloadView.ValueExists(TYPE))
+    else if (exceptionPayload.ValueExists(TYPE))
     {
-        return Marshall(payloadView.GetString(TYPE), message);
+        return Marshall(exceptionPayload.GetString(TYPE), message);
     }
     else
     {

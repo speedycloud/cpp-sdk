@@ -39,7 +39,7 @@ TestEventPatternResult::TestEventPatternResult(const Aws::AmazonWebServiceResult
 
 TestEventPatternResult& TestEventPatternResult::operator =(const Aws::AmazonWebServiceResult<JsonValue>& result)
 {
-  JsonView jsonValue = result.GetPayload().View();
+  const JsonValue& jsonValue = result.GetPayload();
   if(jsonValue.ValueExists("Result"))
   {
     m_result = jsonValue.GetBool("Result");

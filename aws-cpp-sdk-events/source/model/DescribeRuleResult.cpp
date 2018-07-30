@@ -39,7 +39,7 @@ DescribeRuleResult::DescribeRuleResult(const Aws::AmazonWebServiceResult<JsonVal
 
 DescribeRuleResult& DescribeRuleResult::operator =(const Aws::AmazonWebServiceResult<JsonValue>& result)
 {
-  JsonView jsonValue = result.GetPayload().View();
+  const JsonValue& jsonValue = result.GetPayload();
   if(jsonValue.ValueExists("Name"))
   {
     m_name = jsonValue.GetString("Name");

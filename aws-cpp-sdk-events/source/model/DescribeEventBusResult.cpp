@@ -37,7 +37,7 @@ DescribeEventBusResult::DescribeEventBusResult(const Aws::AmazonWebServiceResult
 
 DescribeEventBusResult& DescribeEventBusResult::operator =(const Aws::AmazonWebServiceResult<JsonValue>& result)
 {
-  JsonView jsonValue = result.GetPayload().View();
+  const JsonValue& jsonValue = result.GetPayload();
   if(jsonValue.ValueExists("Name"))
   {
     m_name = jsonValue.GetString("Name");

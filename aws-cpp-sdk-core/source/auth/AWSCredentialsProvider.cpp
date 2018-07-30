@@ -343,16 +343,15 @@ void TaskRoleCredentialsProvider::Reload()
     }
 
     Aws::String accessKey, secretKey, token;
-    Utils::Json::JsonView credentialsView(credentialsDoc);
-    accessKey = credentialsView.GetString("AccessKeyId");
-    secretKey = credentialsView.GetString("SecretAccessKey");
-    token = credentialsView.GetString("Token");
+    accessKey = credentialsDoc.GetString("AccessKeyId");
+    secretKey = credentialsDoc.GetString("SecretAccessKey");
+    token = credentialsDoc.GetString("Token");
     AWS_LOGSTREAM_DEBUG(TASK_ROLE_LOG_TAG, "Successfully pulled credentials from metadata service with access key " << accessKey);
 
     m_credentials.SetAWSAccessKeyId(accessKey);
     m_credentials.SetAWSSecretKey(secretKey);
     m_credentials.SetSessionToken(token);
-    m_expirationDate = Aws::Utils::DateTime(credentialsView.GetString("Expiration"), DateFormat::ISO_8601);
+    m_expirationDate = Aws::Utils::DateTime(credentialsDoc.GetString("Expiration"), DateFormat::ISO_8601);
     AWSCredentialsProvider::Reload();
 }
 

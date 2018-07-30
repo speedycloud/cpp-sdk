@@ -34,18 +34,18 @@ InputTransformer::InputTransformer() :
 {
 }
 
-InputTransformer::InputTransformer(JsonView jsonValue) : 
+InputTransformer::InputTransformer(const JsonValue& jsonValue) : 
     m_inputPathsMapHasBeenSet(false),
     m_inputTemplateHasBeenSet(false)
 {
   *this = jsonValue;
 }
 
-InputTransformer& InputTransformer::operator =(JsonView jsonValue)
+InputTransformer& InputTransformer::operator =(const JsonValue& jsonValue)
 {
   if(jsonValue.ValueExists("InputPathsMap"))
   {
-    Aws::Map<Aws::String, JsonView> inputPathsMapJsonMap = jsonValue.GetObject("InputPathsMap").GetAllObjects();
+    Aws::Map<Aws::String, JsonValue> inputPathsMapJsonMap = jsonValue.GetObject("InputPathsMap").GetAllObjects();
     for(auto& inputPathsMapItem : inputPathsMapJsonMap)
     {
       m_inputPathsMap[inputPathsMapItem.first] = inputPathsMapItem.second.AsString();

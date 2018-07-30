@@ -35,7 +35,7 @@ EcsParameters::EcsParameters() :
 {
 }
 
-EcsParameters::EcsParameters(JsonView jsonValue) : 
+EcsParameters::EcsParameters(const JsonValue& jsonValue) : 
     m_taskDefinitionArnHasBeenSet(false),
     m_taskCount(0),
     m_taskCountHasBeenSet(false)
@@ -43,7 +43,7 @@ EcsParameters::EcsParameters(JsonView jsonValue) :
   *this = jsonValue;
 }
 
-EcsParameters& EcsParameters::operator =(JsonView jsonValue)
+EcsParameters& EcsParameters::operator =(const JsonValue& jsonValue)
 {
   if(jsonValue.ValueExists("TaskDefinitionArn"))
   {

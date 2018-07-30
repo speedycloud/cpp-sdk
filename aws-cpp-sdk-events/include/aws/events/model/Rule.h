@@ -26,7 +26,6 @@ namespace Utils
 namespace Json
 {
   class JsonValue;
-  class JsonView;
 } // namespace Json
 } // namespace Utils
 namespace CloudWatchEvents
@@ -44,8 +43,8 @@ namespace Model
   {
   public:
     Rule();
-    Rule(Aws::Utils::Json::JsonView jsonValue);
-    Rule& operator=(Aws::Utils::Json::JsonView jsonValue);
+    Rule(const Aws::Utils::Json::JsonValue& jsonValue);
+    Rule& operator=(const Aws::Utils::Json::JsonValue& jsonValue);
     Aws::Utils::Json::JsonValue Jsonize() const;
 
 

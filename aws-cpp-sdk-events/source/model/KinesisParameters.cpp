@@ -33,13 +33,13 @@ KinesisParameters::KinesisParameters() :
 {
 }
 
-KinesisParameters::KinesisParameters(JsonView jsonValue) : 
+KinesisParameters::KinesisParameters(const JsonValue& jsonValue) : 
     m_partitionKeyPathHasBeenSet(false)
 {
   *this = jsonValue;
 }
 
-KinesisParameters& KinesisParameters::operator =(JsonView jsonValue)
+KinesisParameters& KinesisParameters::operator =(const JsonValue& jsonValue)
 {
   if(jsonValue.ValueExists("PartitionKeyPath"))
   {

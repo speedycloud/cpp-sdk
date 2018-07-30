@@ -44,7 +44,7 @@ Aws::String TestEventPatternRequest::SerializePayload() const
 
   }
 
-  return payload.View().WriteReadable();
+  return payload.WriteReadable();
 }
 
 Aws::Http::HeaderValueCollection TestEventPatternRequest::GetRequestSpecificHeaders() const

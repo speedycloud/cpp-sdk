@@ -16,7 +16,6 @@ namespace Utils
 namespace Json
 {
   class JsonValue;
-  class JsonView;
 } // namespace Json
 } // namespace Utils
 #if ($rootNamespace != "Aws")
@@ -28,6 +27,7 @@ namespace ${serviceNamespace}
 {
 namespace Model
 {
+#set($jsonRef = "${typeInfo.jsonType}&")
 #set($classNameRef = "${typeInfo.className}&")
 
 #if($shape.documentation)
@@ -39,8 +39,8 @@ namespace Model
   {
   public:
     ${typeInfo.className}();
-    ${typeInfo.className}(${typeInfo.jsonViewType} jsonValue);
-    ${classNameRef} operator=(${typeInfo.jsonViewType} jsonValue);
+    ${typeInfo.className}(const ${jsonRef} jsonValue);
+    ${classNameRef} operator=(const ${jsonRef} jsonValue);
     ${typeInfo.jsonType} Jsonize() const;
 
 #set($useRequiredField = true)

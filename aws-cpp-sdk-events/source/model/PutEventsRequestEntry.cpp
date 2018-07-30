@@ -37,7 +37,7 @@ PutEventsRequestEntry::PutEventsRequestEntry() :
 {
 }
 
-PutEventsRequestEntry::PutEventsRequestEntry(JsonView jsonValue) : 
+PutEventsRequestEntry::PutEventsRequestEntry(const JsonValue& jsonValue) : 
     m_timeHasBeenSet(false),
     m_sourceHasBeenSet(false),
     m_resourcesHasBeenSet(false),
@@ -47,7 +47,7 @@ PutEventsRequestEntry::PutEventsRequestEntry(JsonView jsonValue) :
   *this = jsonValue;
 }
 
-PutEventsRequestEntry& PutEventsRequestEntry::operator =(JsonView jsonValue)
+PutEventsRequestEntry& PutEventsRequestEntry::operator =(const JsonValue& jsonValue)
 {
   if(jsonValue.ValueExists("Time"))
   {
@@ -65,7 +65,7 @@ PutEventsRequestEntry& PutEventsRequestEntry::operator =(JsonView jsonValue)
 
   if(jsonValue.ValueExists("Resources"))
   {
-    Array<JsonView> resourcesJsonList = jsonValue.GetArray("Resources");
+    Array<JsonValue> resourcesJsonList = jsonValue.GetArray("Resources");
     for(unsigned resourcesIndex = 0; resourcesIndex < resourcesJsonList.GetLength(); ++resourcesIndex)
     {
       m_resources.push_back(resourcesJsonList[resourcesIndex].AsString());

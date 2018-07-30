@@ -35,7 +35,7 @@ PutEventsResultEntry::PutEventsResultEntry() :
 {
 }
 
-PutEventsResultEntry::PutEventsResultEntry(JsonView jsonValue) : 
+PutEventsResultEntry::PutEventsResultEntry(const JsonValue& jsonValue) : 
     m_eventIdHasBeenSet(false),
     m_errorCodeHasBeenSet(false),
     m_errorMessageHasBeenSet(false)
@@ -43,7 +43,7 @@ PutEventsResultEntry::PutEventsResultEntry(JsonView jsonValue) :
   *this = jsonValue;
 }
 
-PutEventsResultEntry& PutEventsResultEntry::operator =(JsonView jsonValue)
+PutEventsResultEntry& PutEventsResultEntry::operator =(const JsonValue& jsonValue)
 {
   if(jsonValue.ValueExists("EventId"))
   {

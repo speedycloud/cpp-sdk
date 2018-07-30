@@ -33,17 +33,17 @@ RunCommandParameters::RunCommandParameters() :
 {
 }
 
-RunCommandParameters::RunCommandParameters(JsonView jsonValue) : 
+RunCommandParameters::RunCommandParameters(const JsonValue& jsonValue) : 
     m_runCommandTargetsHasBeenSet(false)
 {
   *this = jsonValue;
 }
 
-RunCommandParameters& RunCommandParameters::operator =(JsonView jsonValue)
+RunCommandParameters& RunCommandParameters::operator =(const JsonValue& jsonValue)
 {
   if(jsonValue.ValueExists("RunCommandTargets"))
   {
-    Array<JsonView> runCommandTargetsJsonList = jsonValue.GetArray("RunCommandTargets");
+    Array<JsonValue> runCommandTargetsJsonList = jsonValue.GetArray("RunCommandTargets");
     for(unsigned runCommandTargetsIndex = 0; runCommandTargetsIndex < runCommandTargetsJsonList.GetLength(); ++runCommandTargetsIndex)
     {
       m_runCommandTargets.push_back(runCommandTargetsJsonList[runCommandTargetsIndex].AsObject());
