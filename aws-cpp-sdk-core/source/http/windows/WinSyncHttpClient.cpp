@@ -111,6 +111,16 @@ bool WinSyncHttpClient::StreamPayloadToRequest(const HttpRequest& request, void*
             payloadStream->read(streamBuffer, HTTP_REQUEST_WRITE_BUFFER_LENGTH);
             std::streamsize bytesRead = payloadStream->gcount();
             success = !payloadStream->bad();
+
+			if (!success)
+			{
+				success = false;
+			}
+
+			if (bytesRead > HTTP_REQUEST_WRITE_BUFFER_LENGTH)
+			{
+				bytesRead = bytesRead;
+			}
             
             uint64_t bytesWritten = 0;
             if (bytesRead > 0)
@@ -147,7 +157,17 @@ bool WinSyncHttpClient::StreamPayloadToRequest(const HttpRequest& request, void*
     if(success)
     {
         success = DoReceiveResponse(hHttpRequest);
+
+		if (!success)
+		{
+			success = false;
+		}
     }
+	else
+	{
+		success = false;
+	}
+
     return success;
 }
 
@@ -303,11 +323,19 @@ void WinSyncHttpClient::MakeRequestInternal(HttpRequest& request,
     {
         success = StreamPayloadToRequest(request, hHttpRequest, writeLimiter);
     }
+	else
+	{
+		success = false;
+	}
 
     if(success)
     {
         BuildSuccessResponse(request, response, hHttpRequest, readLimiter);
     }
+	else
+	{
+		success = false;
+	}
     
     if ((!success || response == nullptr) && !IsRequestProcessingEnabled() || !ContinueRequest(request))
     {
@@ -318,6 +346,9 @@ void WinSyncHttpClient::MakeRequestInternal(HttpRequest& request,
     else if(!success)
     {
         LogRequestInternalFailure();
+
+		Aws::String error = response->GetOriginatingRequest().GetQueryString();
+		AWS_LOGSTREAM_ERROR(GetLogTag(), error);
     }
 
     if (hHttpRequest)

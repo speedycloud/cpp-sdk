@@ -80,20 +80,23 @@ namespace Aws
         std::shared_ptr<TransferHandle> TransferManager::UploadFile(const Aws::String& fileName,
                                                                     const Aws::String& bucketName,
                                                                     const Aws::String& keyName,
+																	const Aws::S3::Model::ObjectCannedACL acl,
                                                                     const Aws::String& contentType,
                                                                     const Aws::Map<Aws::String, Aws::String>& metadata,
                                                                     const std::shared_ptr<const Aws::Client::AsyncCallerContext>& context)
         {
-            return this->DoUploadFile(fileName, bucketName, keyName, contentType, metadata, context);
+            return this->DoUploadFile(fileName, bucketName, keyName, acl, contentType, metadata, context);
         }
 
         std::shared_ptr<TransferHandle> TransferManager::UploadFile(const std::shared_ptr<Aws::IOStream>& fileStream,
                                                                     const Aws::String& bucketName,
-                                                                    const Aws::String& keyName, const Aws::String& contentType,
+                                                                    const Aws::String& keyName, 
+																	const Aws::S3::Model::ObjectCannedACL acl,
+			                                                        const Aws::String& contentType,
                                                                     const Aws::Map<Aws::String, Aws::String>& metadata,
                                                                     const std::shared_ptr<const Aws::Client::AsyncCallerContext>& context)
         {
-            return this->DoUploadFile(fileStream, bucketName, keyName, contentType, metadata, context);
+            return this->DoUploadFile(fileStream, bucketName, keyName, acl, contentType, metadata, context);
         }
 
         std::shared_ptr<TransferHandle> TransferManager::DownloadFile(const Aws::String& bucketName, 
@@ -129,17 +132,17 @@ namespace Aws
             return DownloadFile(bucketName, keyName, createFileFn, downloadConfig, writeToFile, context);
         }
 
-        std::shared_ptr<TransferHandle> TransferManager::RetryUpload(const Aws::String& fileName, const std::shared_ptr<TransferHandle>& retryHandle)
+        std::shared_ptr<TransferHandle> TransferManager::RetryUpload(const Aws::String& fileName, const std::shared_ptr<TransferHandle>& retryHandle, const Aws::S3::Model::ObjectCannedACL acl)
         {
 #ifdef _MSC_VER
             auto fileStream = Aws::MakeShared<Aws::FStream>(CLASS_TAG, Aws::Utils::StringUtils::ToWString(fileName.c_str()).c_str(), std::ios_base::in | std::ios_base::binary);
 #else
             auto fileStream = Aws::MakeShared<Aws::FStream>(CLASS_TAG, fileName.c_str(), std::ios_base::in | std::ios_base::binary);
 #endif
-            return RetryUpload(fileStream, retryHandle);
+            return RetryUpload(fileStream, retryHandle, acl);
         }
 
-        std::shared_ptr<TransferHandle> TransferManager::RetryUpload(const std::shared_ptr<Aws::IOStream>& stream, const std::shared_ptr<TransferHandle>& retryHandle)
+        std::shared_ptr<TransferHandle> TransferManager::RetryUpload(const std::shared_ptr<Aws::IOStream>& stream, const std::shared_ptr<TransferHandle>& retryHandle, const Aws::S3::Model::ObjectCannedACL acl)
         {
             assert(retryHandle->GetStatus() != TransferStatus::IN_PROGRESS);
             assert(retryHandle->GetStatus() != TransferStatus::COMPLETED);
@@ -162,7 +165,7 @@ namespace Aws
                             << retryHandle->GetBucketName() << "] with Key: ["
                             << retryHandle->GetKey() << "].");
 
-                    return UploadFile(retryHandle->GetTargetFilePath(), retryHandle->GetBucketName(), retryHandle->GetKey(), retryHandle->GetContentType(), retryHandle->GetMetadata());
+                    return UploadFile(retryHandle->GetTargetFilePath(), retryHandle->GetBucketName(), retryHandle->GetKey(), acl, retryHandle->GetContentType(), retryHandle->GetMetadata());
                 }
                 else
                 {
@@ -170,7 +173,7 @@ namespace Aws
                             " from stream. In Bucket: [" << retryHandle->GetBucketName() << "] with Key: ["
                             << retryHandle->GetKey() << "].");
 
-                    return UploadFile(stream, retryHandle->GetBucketName(), retryHandle->GetKey(), retryHandle->GetContentType(), retryHandle->GetMetadata());
+                    return UploadFile(stream, retryHandle->GetBucketName(), retryHandle->GetKey(), acl, retryHandle->GetContentType(), retryHandle->GetMetadata());
                 }
             }
 
@@ -178,7 +181,7 @@ namespace Aws
             retryHandle->Restart();
             TriggerTransferStatusUpdatedCallback(retryHandle);
 
-            SubmitUpload(retryHandle, hasFileName ? nullptr : stream);
+            SubmitUpload(retryHandle, acl, hasFileName ? nullptr : stream);
             return retryHandle;
         }
 
@@ -194,12 +197,12 @@ namespace Aws
             m_transferConfig.transferExecutor->Submit([self, inProgressHandle] { self->WaitForCancellationAndAbortUpload(inProgressHandle); });
         }
 
-        void TransferManager::UploadDirectory(const Aws::String& directory, const Aws::String& bucketName, const Aws::String& prefix, const Aws::Map<Aws::String, Aws::String>& metadata)
+        void TransferManager::UploadDirectory(const Aws::String& directory, const Aws::String& bucketName, const Aws::String& prefix, const Aws::S3::Model::ObjectCannedACL acl, const Aws::Map<Aws::String, Aws::String>& metadata)
         {
             assert(m_transferConfig.transferInitiatedCallback);
 
             auto self = shared_from_this();
-            auto visitor = [self, bucketName, prefix, metadata](const Aws::FileSystem::DirectoryTree*, const Aws::FileSystem::DirectoryEntry& entry)
+            auto visitor = [self, bucketName, prefix, metadata, acl](const Aws::FileSystem::DirectoryTree*, const Aws::FileSystem::DirectoryEntry& entry)
             {
                 if (entry && entry.fileType == Aws::FileSystem::FileType::File)
                 {
@@ -213,7 +216,7 @@ namespace Aws
                     AWS_LOGSTREAM_DEBUG(CLASS_TAG, "Uploading file: " << entry.path
                             << " as part of directory upload to S3 Bucket: [" << bucketName << "] and Key: ["
                             << keyName << "].");
-                    self->m_transferConfig.transferInitiatedCallback(self.get(), self->UploadFile(entry.path, bucketName, keyName, DEFAULT_CONTENT_TYPE, metadata));
+                    self->m_transferConfig.transferInitiatedCallback(self.get(), self->UploadFile(entry.path, bucketName, keyName, acl, DEFAULT_CONTENT_TYPE, metadata));
                 }
 
                 return true;
@@ -244,19 +247,19 @@ namespace Aws
             m_transferConfig.s3Client->ListObjectsV2Async(request, handler, context);
         }
 
-        void TransferManager::DoMultiPartUpload(const std::shared_ptr<TransferHandle>& handle)
+        void TransferManager::DoMultiPartUpload(const std::shared_ptr<TransferHandle>& handle, const Aws::S3::Model::ObjectCannedACL acl)
         {
 #ifdef _MSC_VER
             auto wide = Aws::Utils::StringUtils::ToWString(handle->GetTargetFilePath().c_str());
             auto streamToPut = Aws::MakeShared<Aws::FStream>(CLASS_TAG, wide.c_str(), std::ios_base::in | std::ios_base::binary);
-            DoMultiPartUpload(streamToPut, handle);
+            DoMultiPartUpload(streamToPut, handle, acl);
 #else
             auto streamToPut = Aws::MakeShared<Aws::FStream>(CLASS_TAG, handle->GetTargetFilePath().c_str(), std::ios_base::in | std::ios_base::binary);
             DoMultiPartUpload(streamToPut, handle);
 #endif
         }
 
-        void TransferManager::DoMultiPartUpload(const std::shared_ptr<Aws::IOStream>& streamToPut, const std::shared_ptr<TransferHandle>& handle)
+        void TransferManager::DoMultiPartUpload(const std::shared_ptr<Aws::IOStream>& streamToPut, const std::shared_ptr<TransferHandle>& handle, const Aws::S3::Model::ObjectCannedACL acl)
         {
             handle->SetIsMultipart(true);
 
@@ -271,6 +274,7 @@ namespace Aws
                 createMultipartRequest.WithContentType(handle->GetContentType());
                 createMultipartRequest.WithKey(handle->GetKey());
                 createMultipartRequest.WithMetadata(handle->GetMetadata());
+				createMultipartRequest.SetACL(acl);
 
                 auto createMultipartResponse = m_transferConfig.s3Client->CreateMultipartUpload(createMultipartRequest);
                 if (createMultipartResponse.IsSuccess())
@@ -328,7 +332,6 @@ namespace Aws
 
             handle->UpdateStatus(TransferStatus::IN_PROGRESS);
             TriggerTransferStatusUpdatedCallback(handle);
-
 
             while (sentBytes < handle->GetBytesTotalSize() && handle->ShouldContinue() && partsIter != queuedParts.end())
             {
@@ -393,19 +396,19 @@ namespace Aws
             }
         }
 
-        void TransferManager::DoSinglePartUpload(const std::shared_ptr<TransferHandle>& handle)
+        void TransferManager::DoSinglePartUpload(const std::shared_ptr<TransferHandle>& handle, const Aws::S3::Model::ObjectCannedACL acl)
         {
 #ifdef _MSC_VER
             auto wide = Aws::Utils::StringUtils::ToWString(handle->GetTargetFilePath().c_str());
             auto streamToPut = Aws::MakeShared<Aws::FStream>(CLASS_TAG, wide.c_str(), std::ios_base::in | std::ios_base::binary);
-            DoSinglePartUpload(streamToPut, handle);
+            DoSinglePartUpload(streamToPut, handle, acl);
 #else
             auto streamToPut = Aws::MakeShared<Aws::FStream>(CLASS_TAG, handle->GetTargetFilePath().c_str(), std::ios_base::in | std::ios_base::binary);
             DoSinglePartUpload(streamToPut, handle);
 #endif
         }
 
-        void TransferManager::DoSinglePartUpload(const std::shared_ptr<Aws::IOStream>& streamToPut, const std::shared_ptr<TransferHandle>& handle)
+        void TransferManager::DoSinglePartUpload(const std::shared_ptr<Aws::IOStream>& streamToPut, const std::shared_ptr<TransferHandle>& handle, const Aws::S3::Model::ObjectCannedACL acl)
         {
             auto partState = Aws::MakeShared<PartState>(CLASS_TAG, 1, 0, static_cast<size_t>(handle->GetBytesTotalSize()), true);
 
@@ -423,6 +426,7 @@ namespace Aws
                 .WithMetadata(handle->GetMetadata());
 
             putObjectRequest.SetContentType(handle->GetContentType());
+			putObjectRequest.SetACL(acl);
 
             auto buffer = m_bufferManager.Acquire();
 
@@ -1136,6 +1140,7 @@ namespace Aws
         }
 
         std::shared_ptr<TransferHandle> TransferManager::SubmitUpload(const std::shared_ptr<TransferHandle>& handle,
+			    const Aws::S3::Model::ObjectCannedACL acl,
                 const std::shared_ptr<Aws::IOStream>& fileStream)
         {
             if (handle->GetStatus() != Aws::Transfer::TransferStatus::NOT_STARTED)
@@ -1147,26 +1152,26 @@ namespace Aws
             if (MultipartUploadSupported(handle->GetBytesTotalSize()))
             {
                 AWS_LOGSTREAM_DEBUG(CLASS_TAG, "Transfer handle [" << handle->GetId() << "] Scheduling a multi-part upload.");
-                m_transferConfig.transferExecutor->Submit([self, handle, fileStream]
+                m_transferConfig.transferExecutor->Submit([self, handle, fileStream, acl]
                     {
                         if (fileStream != nullptr)
-                            self->DoMultiPartUpload(fileStream, handle);
+                            self->DoMultiPartUpload(fileStream, handle, acl);
                         else
-                            self->DoMultiPartUpload(handle);
+                            self->DoMultiPartUpload(handle, acl);
                     });
             }
             else
             {
                 AWS_LOGSTREAM_DEBUG(CLASS_TAG, "Transfer handle [" << handle->GetId() << "] Scheduling a single-part upload.");
-                m_transferConfig.transferExecutor->Submit([self, handle, fileStream]
+                m_transferConfig.transferExecutor->Submit([self, handle, fileStream, acl]
                     {
                         if (fileStream != nullptr)
                         {
-                            self->DoSinglePartUpload(fileStream, handle);
+                            self->DoSinglePartUpload(fileStream, handle, acl);
                         }
                         else
                         {
-                            self->DoSinglePartUpload(handle);
+                            self->DoSinglePartUpload(handle, acl);
                         }
                     });
             }
@@ -1176,30 +1181,33 @@ namespace Aws
         std::shared_ptr<TransferHandle> TransferManager::DoUploadFile(const std::shared_ptr<Aws::IOStream>& fileStream,
                                                                       const Aws::String& bucketName,
                                                                       const Aws::String& keyName,
+																	  const Aws::S3::Model::ObjectCannedACL acl,
                                                                       const Aws::String& contentType,
                                                                       const Aws::Map<Aws::String, Aws::String>& metadata,
                                                                       const std::shared_ptr<const Aws::Client::AsyncCallerContext>& context)
         {
             auto handle = CreateUploadFileHandle(fileStream.get(), bucketName, keyName, contentType, metadata, context);
-            return SubmitUpload(handle, fileStream);
+            return SubmitUpload(handle, acl, fileStream);
         }
 
         std::shared_ptr<TransferHandle> TransferManager::DoUploadFile(const Aws::String& fileName,
                                                                       const Aws::String& bucketName,
                                                                       const Aws::String& keyName, 
+																	  const Aws::S3::Model::ObjectCannedACL acl,
                                                                       const Aws::String& contentType,
                                                                       const Aws::Map<Aws::String, Aws::String>& metadata,
                                                                       const std::shared_ptr<const Aws::Client::AsyncCallerContext>& context)
         {
             // destructor of FStream will close stream automatically (when out of scope), no need to call close explicitly
 #ifdef _MSC_VER
-            auto wide = Aws::Utils::StringUtils::ToWString(fileName.c_str());
-            auto fileStream = Aws::MakeShared<Aws::FStream>(CLASS_TAG, wide.c_str(), std::ios_base::in | std::ios_base::binary);
+			AWS_LOGSTREAM_TRACE(CLASS_TAG, "input file: " <<  fileName);
+            //auto wide = Aws::Utils::StringUtils::ToWString(fileName.c_str());
+            auto fileStream = Aws::MakeShared<Aws::FStream>(CLASS_TAG, fileName.c_str(), std::ios_base::in | std::ios_base::binary);
 #else
             auto fileStream = Aws::MakeShared<Aws::FStream>(CLASS_TAG, fileName.c_str(), std::ios_base::in | std::ios_base::binary);
 #endif
             auto handle = CreateUploadFileHandle(fileStream.get(), bucketName, keyName, contentType, metadata, context, fileName);
-            return SubmitUpload(handle);
+            return SubmitUpload(handle, acl);
         }
     }
 }

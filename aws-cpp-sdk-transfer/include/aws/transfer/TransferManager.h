@@ -24,6 +24,7 @@
 #include <aws/core/utils/memory/stl/AWSStreamFwd.h>
 #include <aws/core/utils/ResourceManager.h>
 #include <aws/core/client/AsyncCallerContext.h>
+#include <aws/s3/model/ObjectCannedACL.h>
 
 #include <memory>
 
@@ -139,6 +140,7 @@ namespace Aws
             std::shared_ptr<TransferHandle> UploadFile(const Aws::String& fileName,
                                                        const Aws::String& bucketName,
                                                        const Aws::String& keyName,
+													   const Aws::S3::Model::ObjectCannedACL acl,
                                                        const Aws::String& contentType, 
                                                        const Aws::Map<Aws::String, Aws::String>& metadata,
                                                        const std::shared_ptr<const Aws::Client::AsyncCallerContext>& context = nullptr);
@@ -150,6 +152,7 @@ namespace Aws
             std::shared_ptr<TransferHandle> UploadFile(const std::shared_ptr<Aws::IOStream>& stream,
                                                        const Aws::String& bucketName,
                                                        const Aws::String& keyName,
+													   const Aws::S3::Model::ObjectCannedACL acl,
                                                        const Aws::String& contentType, 
                                                        const Aws::Map<Aws::String, Aws::String>& metadata,
                                                        const std::shared_ptr<const Aws::Client::AsyncCallerContext>& context = nullptr);
@@ -180,17 +183,17 @@ namespace Aws
             /**
              * Retry an upload that failed from a previous UploadFile operation. If a multi-part upload was used, only the failed parts will be re-sent.
              */
-            std::shared_ptr<TransferHandle> RetryUpload(const Aws::String& fileName, const std::shared_ptr<TransferHandle>& retryHandle);
+            std::shared_ptr<TransferHandle> RetryUpload(const Aws::String& fileName, const std::shared_ptr<TransferHandle>& retryHandle, const Aws::S3::Model::ObjectCannedACL acl);
             /**
              * Retry an upload that failed from a previous UploadFile operation. If a multi-part upload was used, only the failed parts will be re-sent.
              */
-            std::shared_ptr<TransferHandle> RetryUpload(const std::shared_ptr<Aws::IOStream>& stream, const std::shared_ptr<TransferHandle>& retryHandle);
+            std::shared_ptr<TransferHandle> RetryUpload(const std::shared_ptr<Aws::IOStream>& stream, const std::shared_ptr<TransferHandle>& retryHandle, const Aws::S3::Model::ObjectCannedACL acl);
             
             /**
              * By default, multi-part uploads will remain in a FAILED state if they fail, or a CANCELED state if they were canceled. Leaving failed uploads around
              * still costs the owner of the bucket money. If you know you will not be retrying the request, abort the request after canceling it or if it fails and you don't
              * intend to retry it.
-             */
+             */ 
             void AbortMultipartUpload(const std::shared_ptr<TransferHandle>& inProgressHandle);
 
             /**
@@ -202,7 +205,7 @@ namespace Aws
              * bucketName: the name of the S3 bucket to upload to
              * prefix: the prefix to put on all objects uploaded (e.g. put them in x directory in the bucket).
              */
-            void UploadDirectory(const Aws::String& directory, const Aws::String& bucketName, const Aws::String& prefix, const Aws::Map<Aws::String, Aws::String>& metadata);
+            void UploadDirectory(const Aws::String& directory, const Aws::String& bucketName, const Aws::String& prefix, const Aws::S3::Model::ObjectCannedACL acl, const Aws::Map<Aws::String, Aws::String>& metadata);
 
             /**
             * Downloads entire contents of an Amazon S3 bucket starting at prefix stores them in a directory (not including the prefix). This is an asynchronous method. You will receive notifications
@@ -237,7 +240,7 @@ namespace Aws
             /**
              * Submits the actual task to task schecduler
              */
-            std::shared_ptr<TransferHandle> SubmitUpload(const std::shared_ptr<TransferHandle>& handle, const std::shared_ptr<Aws::IOStream>& fileStream = nullptr);
+            std::shared_ptr<TransferHandle> SubmitUpload(const std::shared_ptr<TransferHandle>& handle, const Aws::S3::Model::ObjectCannedACL acl, const std::shared_ptr<Aws::IOStream>& fileStream = nullptr);
 
             /**
              * Uploads the contents of stream, to bucketName/keyName in S3. contentType and metadata will be added to the object. If the object is larger than the configured bufferSize,
@@ -246,6 +249,7 @@ namespace Aws
             std::shared_ptr<TransferHandle> DoUploadFile(const std::shared_ptr<Aws::IOStream>& fileStream,
                                                          const Aws::String& bucketName,
                                                          const Aws::String& keyName,
+														 const Aws::S3::Model::ObjectCannedACL acl,
                                                          const Aws::String& contentType,
                                                          const Aws::Map<Aws::String, Aws::String>& metadata,
                                                          const std::shared_ptr<const Aws::Client::AsyncCallerContext>& context);
@@ -258,6 +262,7 @@ namespace Aws
             std::shared_ptr<TransferHandle> DoUploadFile(const Aws::String& fileName,
                                                          const Aws::String& bucketName,
                                                          const Aws::String& keyName,
+														 const Aws::S3::Model::ObjectCannedACL acl,
                                                          const Aws::String& contentType,
                                                          const Aws::Map<Aws::String, Aws::String>& metadata,
                                                          const std::shared_ptr<const Aws::Client::AsyncCallerContext>& context);
@@ -265,11 +270,11 @@ namespace Aws
             bool MultipartUploadSupported(uint64_t length) const;
             bool InitializePartsForDownload(const std::shared_ptr<TransferHandle>& handle);
 
-            void DoMultiPartUpload(const std::shared_ptr<Aws::IOStream>& streamToPut, const std::shared_ptr<TransferHandle>& handle);
-            void DoSinglePartUpload(const std::shared_ptr<Aws::IOStream>& streamToPut, const std::shared_ptr<TransferHandle>& handle);
+            void DoMultiPartUpload(const std::shared_ptr<Aws::IOStream>& streamToPut, const std::shared_ptr<TransferHandle>& handle, const Aws::S3::Model::ObjectCannedACL acl);
+            void DoSinglePartUpload(const std::shared_ptr<Aws::IOStream>& streamToPut, const std::shared_ptr<TransferHandle>& handle, const Aws::S3::Model::ObjectCannedACL acl);
 
-            void DoMultiPartUpload(const std::shared_ptr<TransferHandle>& handle);
-            void DoSinglePartUpload(const std::shared_ptr<TransferHandle>& handle);
+            void DoMultiPartUpload(const std::shared_ptr<TransferHandle>& handle, const Aws::S3::Model::ObjectCannedACL acl);
+            void DoSinglePartUpload(const std::shared_ptr<TransferHandle>& handle, const Aws::S3::Model::ObjectCannedACL acl);
 
             void DoDownload(const std::shared_ptr<TransferHandle>& handle);
             void DoSinglePartDownload(const std::shared_ptr<TransferHandle>& handle);
