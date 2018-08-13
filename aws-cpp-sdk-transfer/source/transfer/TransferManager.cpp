@@ -255,7 +255,7 @@ namespace Aws
             DoMultiPartUpload(streamToPut, handle, acl);
 #else
             auto streamToPut = Aws::MakeShared<Aws::FStream>(CLASS_TAG, handle->GetTargetFilePath().c_str(), std::ios_base::in | std::ios_base::binary);
-            DoMultiPartUpload(streamToPut, handle);
+            DoMultiPartUpload(streamToPut, handle, acl);
 #endif
         }
 
@@ -404,7 +404,7 @@ namespace Aws
             DoSinglePartUpload(streamToPut, handle, acl);
 #else
             auto streamToPut = Aws::MakeShared<Aws::FStream>(CLASS_TAG, handle->GetTargetFilePath().c_str(), std::ios_base::in | std::ios_base::binary);
-            DoSinglePartUpload(streamToPut, handle);
+            DoSinglePartUpload(streamToPut, handle, acl);
 #endif
         }
 
