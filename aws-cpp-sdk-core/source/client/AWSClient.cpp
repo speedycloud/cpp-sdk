@@ -581,9 +581,9 @@ static bool isRetryableHttpResponseCode(HttpResponseCode responseCode)
         responseCode == HttpResponseCode::INTERNAL_SERVER_ERROR ||
         responseCode == HttpResponseCode::SERVICE_UNAVAILABLE ||
         responseCode == HttpResponseCode::GATEWAY_TIMEOUT ||
-		responseCode == HttpResponseCode::NETWORK_CONNECT_TIMEOUT ||
-		responseCode == HttpResponseCode::NETWORK_READ_TIMEOUT ||
-		responseCode == HttpResponseCode::REQUEST_NOT_MADE;
+        responseCode == HttpResponseCode::NETWORK_CONNECT_TIMEOUT ||
+        responseCode == HttpResponseCode::NETWORK_READ_TIMEOUT ||
+        responseCode == HttpResponseCode::REQUEST_NOT_MADE;
 }
 
 AWSError<CoreErrors> AWSJsonClient::BuildAWSError(
@@ -692,6 +692,7 @@ AWSError<CoreErrors> AWSXMLClient::BuildAWSError(const std::shared_ptr<Http::Htt
         AWS_LOGSTREAM_ERROR(AWS_CLIENT_LOG_TAG, error);
         return error;
     }
+
 
     if (httpResponse->GetResponseBody().tellp() < 1)
     {

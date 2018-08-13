@@ -228,7 +228,6 @@ bool AWSAuthV4Signer::SignRequest(Aws::Http::HttpRequest& request, bool signBody
     DateTime now = GetSigningTimestamp();
     Aws::String dateHeaderValue = now.ToGmtString(LONG_DATE_FORMAT_STR);
     request.SetHeaderValue(AWS_DATE_HEADER, dateHeaderValue);
-	//request.SetHeaderValue("x-amz-date", dateHeaderValue);
 
     Aws::StringStream headersStream;
     Aws::StringStream signedHeadersStream;
@@ -415,7 +414,7 @@ bool AWSAuthV4Signer::ServiceRequireUnsignedPayload(const Aws::String&) const
     // However, other services (for example RDS) implement the specification as outlined here:
     // https://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html
     // which states that body-less requests should use the empty-string SHA256 hash.
-	return true;// "s3" == serviceName;
+    return true;
 }
 
 Aws::String AWSAuthV4Signer::GenerateSignature(const AWSCredentials& credentials, const Aws::String& stringToSign,
