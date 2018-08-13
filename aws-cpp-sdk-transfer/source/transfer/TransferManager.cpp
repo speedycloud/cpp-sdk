@@ -274,7 +274,7 @@ namespace Aws
                 createMultipartRequest.WithContentType(handle->GetContentType());
                 createMultipartRequest.WithKey(handle->GetKey());
                 createMultipartRequest.WithMetadata(handle->GetMetadata());
-				createMultipartRequest.SetACL(acl);
+                createMultipartRequest.SetACL(acl);
 
                 auto createMultipartResponse = m_transferConfig.s3Client->CreateMultipartUpload(createMultipartRequest);
                 if (createMultipartResponse.IsSuccess())
