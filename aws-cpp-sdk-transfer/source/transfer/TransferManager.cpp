@@ -1201,8 +1201,8 @@ namespace Aws
             // destructor of FStream will close stream automatically (when out of scope), no need to call close explicitly
 #ifdef _MSC_VER
 			AWS_LOGSTREAM_TRACE(CLASS_TAG, "input file: " <<  fileName);
-            //auto wide = Aws::Utils::StringUtils::ToWString(fileName.c_str());
-            auto fileStream = Aws::MakeShared<Aws::FStream>(CLASS_TAG, fileName.c_str(), std::ios_base::in | std::ios_base::binary);
+			auto wide = Aws::Utils::StringUtils::ToWString(fileName.c_str());
+			auto fileStream = Aws::MakeShared<Aws::FStream>(CLASS_TAG, wide.c_str(), std::ios_base::in | std::ios_base::binary);
 #else
             auto fileStream = Aws::MakeShared<Aws::FStream>(CLASS_TAG, fileName.c_str(), std::ios_base::in | std::ios_base::binary);
 #endif

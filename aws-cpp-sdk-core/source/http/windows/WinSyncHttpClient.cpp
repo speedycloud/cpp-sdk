@@ -274,7 +274,7 @@ void WinSyncHttpClient::MakeRequestInternal(HttpRequest& request,
 {
 	//we URL encode right before going over the wire to avoid double encoding problems with the signer.
 	URI& uriRef = request.GetUri();
-	uriRef.SetPath(URI::URLEncodePathRFC3986(uriRef.GetPath()));
+	uriRef.SetPath(URI::URLEncodePath(uriRef.GetPath()));
 
     AWS_LOGSTREAM_TRACE(GetLogTag(), "Making " << HttpMethodMapper::GetNameForHttpMethod(request.GetMethod()) <<
 			" request to uri " << uriRef.GetURIString(true));

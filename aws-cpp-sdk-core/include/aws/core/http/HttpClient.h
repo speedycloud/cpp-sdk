@@ -57,7 +57,7 @@ namespace Aws
 
             /**
              * Takes an http request, makes it, and returns the newly allocated HttpResponse.
-             * Default implementation provided for backwards compatability.
+             * Default implementation provided for backwards compatibility.
              */
             virtual std::shared_ptr<HttpResponse> MakeRequest(const std::shared_ptr<HttpRequest>& request,
                 Aws::Utils::RateLimits::RateLimiterInterface* readLimiter = nullptr,
